@@ -1,306 +1,644 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stego-AES Suite (Fixed)</title>
-    
+    <title>Quantum Stego-AES | Advanced Ops</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;600&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        .main-card { max-width: 800px; margin: 40px auto; padding: 30px; border-radius: 15px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .preview-box { max-width: 100%; height: auto; margin-top: 15px; border: 2px dashed #ccc; padding: 5px; display: none; border-radius: 8px; }
-        .log-box { background: #1e1e1e; color: #00ff00; padding: 15px; font-family: 'Courier New', monospace; height: 180px; overflow-y: auto; border-radius: 8px; font-size: 0.85rem; margin-top: 25px; border: 1px solid #333; }
-        .nav-tabs .nav-link.active { background-color: #0d6efd; color: white; border-color: #0d6efd; }
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #bc13fe;
+            --bg-dark: #050505;
+            --glass: rgba(20, 20, 30, 0.75);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: 'Exo 2', sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Interactive Background */
+        #tsparticles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* 3D Glass Card */
+        .quantum-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(0, 243, 255, 0.5);
+            border-bottom: 1px solid rgba(188, 19, 254, 0.5);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-top: 5vh;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            transform-style: preserve-3d;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, var(--neon-cyan), #fff, var(--neon-pink));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+
+        /* Tabs */
+        .nav-pills {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50px;
+            padding: 5px;
+        }
+
+        .nav-pills .nav-link {
+            color: #aaa;
+            border-radius: 50px;
+            transition: 0.4s;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(90deg, var(--neon-cyan), #0077ff);
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        /* Inputs */
+        .form-control {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #333;
+            color: var(--neon-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            transition: 0.3s;
+        }
+
+        .form-control:focus {
+            background: rgba(0, 0, 0, 0.8);
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
+            color: #fff;
+        }
+
+        .form-control::placeholder {
+            color: #555;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed #444;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+
+        .upload-zone i {
+            font-size: 3rem;
+            color: #666;
+            transition: 0.3s;
+        }
+
+        .upload-zone:hover i {
+            color: var(--neon-cyan);
+            transform: scale(1.1);
+        }
+
+        /* Buttons */
+        .btn-quantum {
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-quantum::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--neon-cyan);
+            transition: 0.3s;
+            z-index: -1;
+        }
+
+        .btn-quantum:hover::before {
+            left: 0;
+        }
+
+        .btn-quantum:hover {
+            color: #000;
+            box-shadow: 0 0 30px var(--neon-cyan);
+        }
+
+        .btn-decrypt {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+
+        .btn-decrypt::before {
+            background: var(--neon-pink);
+        }
+
+        .btn-decrypt:hover {
+            box-shadow: 0 0 30px var(--neon-pink);
+        }
+
+        /* Terminal Log */
+        .terminal-window {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            height: 180px;
+            overflow-y: auto;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            color: #0f0;
+            box-shadow: inset 0 0 20px #000;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        .log-time {
+            color: #666;
+            margin-right: 10px;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Image Preview */
+        .preview-container {
+            position: relative;
+            display: none;
+            margin-top: 20px;
+        }
+
+        .preview-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #444;
+        }
+
+        .file-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            border: 1px solid var(--neon-cyan);
+        }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="main-card">
-        <h2 class="text-center mb-4"><i class="fas fa-mask"></i> Stego-AES Ultimate</h2>
+    <div id="tsparticles"></div>
 
-        <ul class="nav nav-tabs nav-fill mb-4" id="myTab" role="tablist">
-            <li class="nav-item"><button class="nav-link active" id="enc-tab" data-bs-toggle="tab" data-bs-target="#enc-pane">1. Hide (Encode)</button></li>
-            <li class="nav-item"><button class="nav-link" id="dec-tab" data-bs-toggle="tab" data-bs-target="#dec-pane">2. Reveal (Decode)</button></li>
-        </ul>
+    <div class="container pb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
 
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="enc-pane">
-                <div class="mb-3">
-                    <label class="fw-bold">Step 1: Upload Clean Image</label>
-                    <input type="file" class="form-control" id="enc-file" accept="image/png, image/jpeg">
-                    <img id="enc-preview" class="preview-box">
-                </div>
-                <div class="mb-3">
-                    <label class="fw-bold">Step 2: Secret Message</label>
-                    <textarea class="form-control" id="enc-msg" rows="2" placeholder="Type your secret here..."></textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="fw-bold">Step 3: Password</label>
-                    <input type="password" class="form-control" id="enc-pass" placeholder="Set a strong password">
-                </div>
-                <button class="btn btn-primary w-100 py-2" onclick="processEncode()">
-                    <i class="fas fa-lock"></i> Encrypt & Hide Message
-                </button>
-                
-                <div id="download-section" class="text-center mt-3" style="display:none;">
-                    <div class="alert alert-success"><strong>Success!</strong> Message hidden in image.</div>
-                    <a id="btn-download" class="btn btn-success btn-lg shadow"><i class="fas fa-download"></i> Download Secret Image</a>
+                <div class="quantum-card" data-tilt-glare data-tilt-max-glare="0.2">
+
+                    <div class="text-center mb-5">
+                        <h2 class="animate__animated animate__fadeInDown">QUANTUM OPS</h2>
+                        <p
+                            style="color: var(--neon-cyan); letter-spacing: 3px; text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);">
+                            SECURE STEGANOGRAPHY PROTOCOL
+                        </p>
+                    </div>
+
+                    <div class="alert alert-dark border-secondary d-flex align-items-center" role="alert">
+                        <i class="fas fa-exclamation-triangle text-warning me-3" style="font-size: 1.5rem;"></i>
+                        <div class="small text-muted">
+                            <strong>Security Warning:</strong> Do not send processed images via WhatsApp/Messenger as
+                            "Photos".
+                            <span class="text-white">Always send as "Document" or "File"</span> to prevent data
+                            corruption.
+                        </div>
+                    </div>
+
+                    <ul class="nav nav-pills nav-fill mb-4" id="pills-tab" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" id="enc-tab" data-bs-toggle="pill"
+                                data-bs-target="#enc-pane">
+                                <i class="fas fa-lock me-2"></i> ENCRYPT
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" id="dec-tab" data-bs-toggle="pill" data-bs-target="#dec-pane">
+                                <i class="fas fa-eye me-2"></i> DECRYPT
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+
+                        <div class="tab-pane fade show active" id="enc-pane">
+                            <div class="mb-4">
+                                <div class="upload-zone" onclick="document.getElementById('enc-file').click()">
+                                    <i class="fas fa-microchip mb-3"></i>
+                                    <h5 class="text-white">Initialize Cover Image</h5>
+                                    <p class="text-muted small mb-0">Click to upload .PNG or .JPG</p>
+                                    <input type="file" id="enc-file" hidden accept="image/*">
+                                </div>
+                                <div class="preview-container" id="enc-preview-box">
+                                    <img id="enc-preview" class="preview-img">
+                                    <span class="file-badge" id="enc-filename">filename.png</span>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <div class="form-floating">
+                                        <textarea class="form-control" id="enc-msg" style="height: 100px"
+                                            placeholder="Secret"></textarea>
+                                        <label for="enc-msg">Secret Payload</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-dark border-secondary text-secondary"><i
+                                                class="fas fa-key"></i></span>
+                                        <input type="password" class="form-control" id="enc-pass"
+                                            placeholder="Encryption Key (Password)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-quantum w-100 py-3 mt-4" onclick="processEncode()">
+                                <i class="fas fa-shield-alt me-2"></i> EXECUTE ENCRYPTION
+                            </button>
+
+                            <div id="download-section" class="mt-4 text-center" style="display:none;">
+                                <div class="d-grid gap-2">
+                                    <a id="btn-download" class="btn btn-outline-light py-3 border-2">
+                                        <i
+                                            class="fas fa-download me-2 animate__animated animate__flash animate__infinite"></i>
+                                        DOWNLOAD SECURE ASSET
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="dec-pane">
+                            <div class="mb-4">
+                                <div class="upload-zone" onclick="document.getElementById('dec-file').click()">
+                                    <i class="fas fa-satellite-dish mb-3"></i>
+                                    <h5 class="text-white">Upload Intercepted Image</h5>
+                                    <p class="text-muted small mb-0">Select the secret image file</p>
+                                    <input type="file" id="dec-file" hidden accept="image/*">
+                                </div>
+                                <div class="preview-container" id="dec-preview-box">
+                                    <img id="dec-preview" class="preview-img">
+                                    <span class="file-badge" id="dec-filename">filename.png</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-dark border-secondary text-secondary"><i
+                                            class="fas fa-unlock"></i></span>
+                                    <input type="password" class="form-control" id="dec-pass"
+                                        placeholder="Decryption Key">
+                                </div>
+                            </div>
+
+                            <button class="btn btn-quantum btn-decrypt w-100 py-3" onclick="processDecode()">
+                                <i class="fas fa-radar me-2"></i> EXTRACT DATA
+                            </button>
+
+                            <div id="dec-result-area" class="mt-4" style="display:none;">
+                                <label class="text-success small mb-1">DECRYPTED PAYLOAD:</label>
+                                <div class="p-3 rounded border border-success bg-dark"
+                                    style="box-shadow: 0 0 15px rgba(0,255,0,0.1);">
+                                    <code id="dec-result" class="text-success" style="word-wrap: break-word;"></code>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-5">
+                        <label class="small text-muted mb-2"><i class="fas fa-terminal me-1"></i> SYSTEM LOGS</label>
+                        <div class="terminal-window" id="terminal-logs">
+                            <div class="log-entry">> Quantum Core Initialized...</div>
+                            <div class="log-entry">> Connection to Firebase Satellite: <span
+                                    class="text-warning">Establishing...</span></div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-
-            <div class="tab-pane fade" id="dec-pane">
-                <div class="mb-3">
-                    <label class="fw-bold">Step 1: Upload Secret Image</label>
-                    <input type="file" class="form-control" id="dec-file" accept="image/*">
-                    <img id="dec-preview" class="preview-box">
-                </div>
-                <div class="mb-3">
-                    <label class="fw-bold">Step 2: Password</label>
-                    <input type="password" class="form-control" id="dec-pass" placeholder="Enter original password">
-                </div>
-                <button class="btn btn-warning w-100 py-2" onclick="processDecode()">
-                    <i class="fas fa-unlock"></i> Reveal Message
-                </button>
-                <div id="dec-result-area" class="mt-3" style="display:none;">
-                    <label>Hidden Message:</label>
-                    <div class="alert alert-secondary" id="dec-result"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="log-box" id="firebase-logs">
-            <div>> System Initialized...</div>
-            <div>> Internal Steganography Engine Loaded.</div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.0.6/tsparticles.slim.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-<script>
-    // ==========================================
-    // 1. EMBEDDED STEGANOGRAPHY ENGINE (No external link needed)
-    // ==========================================
-    const StegoEngine = {
-        encode: function(message, imageCallback) {
-            const c = document.createElement('canvas');
-            const ctx = c.getContext('2d');
-            const img = new Image();
-            img.src = document.getElementById('enc-preview').src;
-            
-            img.onload = function() {
-                c.width = img.width;
-                c.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                const imgData = ctx.getImageData(0, 0, c.width, c.height);
-                const data = imgData.data;
+    <script>
+        // ==========================================
+        // 1. VISUAL EFFECTS ENGINE
+        // ==========================================
 
-                // Add termination marker "|||END"
-                message += "|||END"; 
-                
-                // Convert to binary
-                let binary = "";
-                for(let i=0; i<message.length; i++) {
-                    let bin = message.charCodeAt(i).toString(2);
-                    binary += "00000000".substr(bin.length) + bin;
+        // Typewriter Log Effect
+        function logToTerminal(msg, type = "info") {
+            const term = document.getElementById('terminal-logs');
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            let colorClass = type === 'error' ? 'text-danger' : (type === 'success' ? 'text-success' : 'text-info');
+
+            div.innerHTML = `<span class="log-time">[${time}]</span> <span class="${colorClass}">> ${msg}</span>`;
+            term.appendChild(div);
+            term.scrollTop = term.scrollHeight; // Auto scroll
+
+            // Firebase Logging
+            if (dbRef && (type === 'success' || type === 'error')) {
+                dbRef.push({ action: msg, type: type, timestamp: new Date().toString() });
+            }
+        }
+
+        // Initialize Particles
+        (async () => {
+            await tsParticles.load("tsparticles", {
+                particles: {
+                    color: { value: "#00f3ff" },
+                    links: { enable: true, color: "#00f3ff", opacity: 0.1 },
+                    move: { enable: true, speed: 1 },
+                    number: { value: 60 },
+                    opacity: { value: 0.3 },
+                    size: { value: 1 }
+                },
+                interactivity: {
+                    events: { onHover: { enable: true, mode: "repulse" } },
+                    modes: { repulse: { distance: 100 } }
                 }
+            });
+        })();
 
-                if(binary.length > data.length/4) {
-                    alert("Message too long for this image!");
-                    return;
-                }
+        // Preview Handling
+        const handleFileSelect = (input, imgId, badgeId, boxId) => {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById(imgId).src = e.target.result;
+                    document.getElementById(badgeId).innerText = file.name;
+                    document.getElementById(boxId).style.display = 'block';
+                    logToTerminal(`File loaded: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
+                };
+                reader.readAsDataURL(file);
+            }
+        };
 
-                // Hide bits in Least Significant Bit (LSB)
-                let digit = 0;
-                for(let i=0; i<data.length; i+=4) {
-                    if(digit < binary.length) {
-                        data[i] = (data[i] & 0xFE) | parseInt(binary[digit]);
-                        digit++;
-                    } else {
-                        break;
+        document.getElementById('enc-file').addEventListener('change', function () {
+            handleFileSelect(this, 'enc-preview', 'enc-filename', 'enc-preview-box');
+        });
+        document.getElementById('dec-file').addEventListener('change', function () {
+            handleFileSelect(this, 'dec-preview', 'dec-filename', 'dec-preview-box');
+        });
+
+        // ==========================================
+        // 2. CORE LOGIC (STEGO + AES + FIREBASE)
+        // ==========================================
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDngIt392F6q_8CwOYG7K5MKTPm719VaWY",
+            authDomain: "steganography-image.firebaseapp.com",
+            databaseURL: "https://steganography-image-default-rtdb.firebaseio.com",
+            projectId: "steganography-image",
+            storageBucket: "steganography-image.firebasestorage.app",
+            messagingSenderId: "675217006348",
+            appId: "1:675217006348:web:83c4457018b3e46a56b329",
+            measurementId: "G-BYJCHXVQYJ"
+        };
+
+        let dbRef = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            dbRef = firebase.database().ref('logs');
+            setTimeout(() => logToTerminal("Firebase Uplink Established.", "success"), 1000);
+        } catch (e) {
+            setTimeout(() => logToTerminal("Running in Offline Mode.", "error"), 1000);
+        }
+
+        const StegoEngine = {
+            encode: function (message, imageCallback) {
+                const c = document.createElement('canvas');
+                const ctx = c.getContext('2d');
+                const img = new Image();
+                img.src = document.getElementById('enc-preview').src;
+
+                img.onload = function () {
+                    c.width = img.width;
+                    c.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                    const data = imgData.data;
+
+                    message += "|||END";
+                    let binary = "";
+                    for (let i = 0; i < message.length; i++) {
+                        let bin = message.charCodeAt(i).toString(2);
+                        binary += "00000000".substr(bin.length) + bin;
                     }
-                }
-                
-                ctx.putImageData(imgData, 0, 0);
-                imageCallback(c.toDataURL('image/png'));
-            };
-        },
 
-        decode: function(imageSrc, callback) {
-            const c = document.createElement('canvas');
-            const ctx = c.getContext('2d');
-            const img = new Image();
-            img.src = imageSrc;
-            
-            img.onload = function() {
-                c.width = img.width;
-                c.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                const imgData = ctx.getImageData(0, 0, c.width, c.height);
-                const data = imgData.data;
-                
-                let binary = "";
-                // Read all LSBs
-                for(let i=0; i<data.length; i+=4) {
-                    binary += (data[i] & 1).toString();
-                }
-
-                // Convert binary to text
-                let output = "";
-                for(let i=0; i<binary.length; i+=8) {
-                    let byte = binary.substr(i, 8);
-                    let char = String.fromCharCode(parseInt(byte, 2));
-                    output += char;
-                    // Check for marker
-                    if(output.endsWith("|||END")) {
-                        callback(output.replace("|||END", ""));
+                    if (binary.length > data.length / 4) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Capacity Exceeded',
+                            text: 'This image is too small to hold your message.',
+                            background: '#050505', color: '#fff'
+                        });
+                        logToTerminal("Error: Insufficient pixel density.", "error");
                         return;
                     }
-                }
-                callback(null); // Not found
-            };
-        }
-    };
 
-    // ==========================================
-    // 2. MAIN LOGIC (ENCRYPTION + UI)
-    // ==========================================
-
-    // --- FIREBASE SETUP ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyDngIt392F6q_8CwOYG7K5MKTPm719VaWY",
-      authDomain: "steganography-image.firebaseapp.com",
-      databaseURL: "https://steganography-image-default-rtdb.firebaseio.com",
-      projectId: "steganography-image",
-      storageBucket: "steganography-image.firebasestorage.app",
-      messagingSenderId: "675217006348",
-      appId: "1:675217006348:web:83c4457018b3e46a56b329",
-      measurementId: "G-BYJCHXVQYJ"
-    };
-    
-    let dbRef = null;
-    try {
-        firebase.initializeApp(firebaseConfig);
-        dbRef = firebase.database().ref('logs');
-        logToScreen("Connected to Firebase Database.");
-    } catch(e) {
-        logToScreen("Firebase Error: " + e.message);
-    }
-
-    function logToScreen(msg) {
-        const box = document.getElementById('firebase-logs');
-        const div = document.createElement('div');
-        div.innerText = `> ${msg}`;
-        box.prepend(div);
-        
-        if(dbRef && (msg.includes("Success") || msg.includes("Hidden"))) {
-            dbRef.push({ action: msg, timestamp: new Date().toString() });
-        }
-    }
-
-    // --- ENCODE PROCESS ---
-    document.getElementById('enc-file').addEventListener('change', function(e) {
-        if(e.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                document.getElementById('enc-preview').src = evt.target.result;
-                document.getElementById('enc-preview').style.display = 'block';
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
-
-    function processEncode() {
-        const file = document.getElementById('enc-file').files[0];
-        const msg = document.getElementById('enc-msg').value;
-        const pass = document.getElementById('enc-pass').value;
-
-        if(!file || !msg || !pass) { alert("All fields are required!"); return; }
-
-        logToScreen("Encrypting Message with AES...");
-        
-        try {
-            // 1. Encrypt
-            const encrypted = CryptoJS.AES.encrypt(msg, pass).toString();
-            
-            // 2. Hide
-            logToScreen("Hiding encrypted data in pixels...");
-            StegoEngine.encode(encrypted, function(finalUrl) {
-                const dlBtn = document.getElementById('btn-download');
-                dlBtn.href = finalUrl;
-                dlBtn.download = "secret_image.png";
-                
-                document.getElementById('download-section').style.display = 'block';
-                logToScreen("Success: Message Hidden & Ready.");
-            });
-
-        } catch(e) {
-            logToScreen("Error: " + e.message);
-        }
-    }
-
-    // --- DECODE PROCESS ---
-    document.getElementById('dec-file').addEventListener('change', function(e) {
-        if(e.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                document.getElementById('dec-preview').src = evt.target.result;
-                document.getElementById('dec-preview').style.display = 'block';
-            };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
-
-    function processDecode() {
-        const file = document.getElementById('dec-file').files[0];
-        const pass = document.getElementById('dec-pass').value;
-
-        if(!file || !pass) { alert("File and Password required!"); return; }
-
-        logToScreen("Analyzing Image Pixels...");
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            StegoEngine.decode(e.target.result, function(extractedEncrypted) {
-                if(!extractedEncrypted) {
-                    showResult("No hidden message found.", false);
-                    logToScreen("Failed: No data detected.");
-                    return;
-                }
-
-                logToScreen("Data found. Attempting Decryption...");
-                try {
-                    const bytes = CryptoJS.AES.decrypt(extractedEncrypted, pass);
-                    const originalText = bytes.toString(CryptoJS.enc.Utf8);
-
-                    if(originalText) {
-                        showResult(originalText, true);
-                        logToScreen("Success: Message Decoded!");
-                    } else {
-                        showResult("Wrong Password.", false);
-                        logToScreen("Failed: Decryption Key Invalid.");
+                    let digit = 0;
+                    for (let i = 0; i < data.length; i += 4) {
+                        if (digit < binary.length) {
+                            data[i] = (data[i] & 0xFE) | parseInt(binary[digit]);
+                            digit++;
+                        } else { break; }
                     }
-                } catch(err) {
-                    showResult("Decryption Error.", false);
-                }
-            });
+
+                    ctx.putImageData(imgData, 0, 0);
+                    imageCallback(c.toDataURL('image/png'));
+                };
+            },
+
+            decode: function (imageSrc, callback) {
+                const c = document.createElement('canvas');
+                const ctx = c.getContext('2d');
+                const img = new Image();
+                img.src = imageSrc;
+
+                img.onload = function () {
+                    c.width = img.width;
+                    c.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                    const data = imgData.data;
+
+                    let binary = "";
+                    for (let i = 0; i < data.length; i += 4) { binary += (data[i] & 1).toString(); }
+
+                    let output = "";
+                    for (let i = 0; i < binary.length; i += 8) {
+                        let byte = binary.substr(i, 8);
+                        let char = String.fromCharCode(parseInt(byte, 2));
+                        output += char;
+                        if (output.endsWith("|||END")) {
+                            callback(output.replace("|||END", ""));
+                            return;
+                        }
+                    }
+                    callback(null);
+                };
+            }
         };
-        reader.readAsDataURL(file);
-    }
 
-    function showResult(text, isSuccess) {
-        const div = document.getElementById('dec-result');
-        div.innerText = text;
-        div.className = isSuccess ? "alert alert-success" : "alert alert-danger";
-        document.getElementById('dec-result-area').style.display = 'block';
-    }
+        function processEncode() {
+            const file = document.getElementById('enc-file').files[0];
+            const msg = document.getElementById('enc-msg').value;
+            const pass = document.getElementById('enc-pass').value;
 
-</script>
+            if (!file || !msg || !pass) {
+                logToTerminal("Input Validation Failed: Missing fields.", "error");
+                return;
+            }
+
+            logToTerminal("Encrypting payload with AES-256...");
+
+            try {
+                const encrypted = CryptoJS.AES.encrypt(msg, pass).toString();
+                logToTerminal("Encryption Complete. Injecting bitstream...");
+
+                StegoEngine.encode(encrypted, function (finalUrl) {
+                    const dlBtn = document.getElementById('btn-download');
+                    dlBtn.href = finalUrl;
+                    dlBtn.download = "quantum_stego_secure.png";
+
+                    document.getElementById('download-section').style.display = 'block';
+                    logToTerminal("Steganography Successful. Asset generated.", "success");
+
+                    Swal.fire({
+                        title: 'Encryption Successful',
+                        text: 'The data has been hidden in the pixels.',
+                        icon: 'success',
+                        confirmButtonText: 'ACKNOWLEDGED',
+                        background: '#050505', color: '#fff',
+                        confirmButtonColor: '#00f3ff'
+                    });
+                });
+
+            } catch (e) { logToTerminal("System Error: " + e.message, "error"); }
+        }
+
+        function processDecode() {
+            const file = document.getElementById('dec-file').files[0];
+            const pass = document.getElementById('dec-pass').value;
+
+            if (!file || !pass) {
+                logToTerminal("Input Validation Failed.", "error");
+                return;
+            }
+
+            logToTerminal("Scanning pixel array for artifacts...");
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                StegoEngine.decode(e.target.result, function (extractedEncrypted) {
+                    if (!extractedEncrypted) {
+                        logToTerminal("Scan Result: Negative (No data found).", "error");
+                        Swal.fire({ icon: 'error', title: 'Scan Failed', text: 'No hidden message detected.', background: '#050505', color: '#fff' });
+                        return;
+                    }
+
+                    logToTerminal("Artifact found. Attempting decryption...");
+                    try {
+                        const bytes = CryptoJS.AES.decrypt(extractedEncrypted, pass);
+                        const originalText = bytes.toString(CryptoJS.enc.Utf8);
+
+                        if (originalText) {
+                            document.getElementById('dec-result').innerText = originalText;
+                            document.getElementById('dec-result-area').style.display = 'block';
+                            logToTerminal("Decryption Successful. Payload revealed.", "success");
+                            Swal.fire({
+                                title: 'Access Granted',
+                                text: 'Message decoded successfully.',
+                                icon: 'success',
+                                background: '#050505', color: '#fff', confirmButtonColor: '#bc13fe'
+                            });
+                        } else {
+                            logToTerminal("Decryption Failed: Invalid Credentials.", "error");
+                            Swal.fire({ icon: 'warning', title: 'Access Denied', text: 'Incorrect Password.', background: '#050505', color: '#fff' });
+                        }
+                    } catch (err) {
+                        logToTerminal("Critical Decryption Error.", "error");
+                    }
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
 </body>
+
 </html>
