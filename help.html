@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Ops | Field Manual</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-pink: #bc13fe;
+            --bg-dark: #050505;
+            --glass: rgba(20, 20, 30, 0.85);
+            --border: rgba(0, 243, 255, 0.3);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: 'Exo 2', sans-serif;
+            color: #ccc;
+            min-height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px; /* Grid effect */
+        }
+
+        /* Main Container */
+        .manual-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-left: 5px solid var(--neon-cyan);
+            border-radius: 15px;
+            padding: 3rem;
+            margin-top: 5vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: var(--neon-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+        }
+
+        .subtitle { color: #666; font-family: 'Orbitron', sans-serif; margin-bottom: 40px; }
+
+        /* Step Boxes */
+        .step-section {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            transition: 0.3s;
+        }
+        .step-section:hover { border-color: var(--neon-cyan); transform: translateX(5px); }
+
+        .step-title {
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+
+        .step-number {
+            color: var(--neon-pink);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: rgba(188, 19, 254, 0.1);
+            border: 1px solid var(--neon-pink);
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 40px;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            transition: 0.3s;
+            background: transparent;
+        }
+        .btn-back:hover {
+            background: var(--neon-cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="manual-card">
+                
+                <div class="text-center">
+                    <h2>Operational Manual</h2>
+                    <p class="subtitle">PROTOCOL V1.0 // USER GUIDE</p>
+                </div>
+
+                <!-- ENCRYPTION GUIDE -->
+                <div class="step-section">
+                    <div class="step-title" style="color: var(--neon-cyan);">
+                        <i class="fas fa-lock me-2"></i> PHASE 1: ENCRYPTION
+                    </div>
+                    <p><span class="step-number">01</span> <strong>Upload Cover Image:</strong> Select a high-quality PNG or JPG image. This will serve as the "container" for your secret.</p>
+                    <p><span class="step-number">02</span> <strong>Input Data:</strong> Type your secret message into the payload field.</p>
+                    <p><span class="step-number">03</span> <strong>Set Key:</strong> Enter a strong password. You MUST remember this password to decrypt later.</p>
+                    <p><span class="step-number">04</span> <strong>Execute:</strong> Click "Encrypt" and download the generated file.</p>
+                </div>
+
+                <!-- SHARING GUIDE (CRITICAL) -->
+                <div class="step-section" style="border-color: var(--neon-pink);">
+                    <div class="step-title" style="color: var(--neon-pink);">
+                        <i class="fas fa-satellite-dish me-2"></i> PHASE 2: TRANSMISSION (CRITICAL)
+                    </div>
+                    <div class="warning-box mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i> <strong>DATA CORRUPTION WARNING</strong>
+                    </div>
+                    <p>Standard messaging apps (WhatsApp, Messenger, Discord) compress images to save space. <strong>Compression destroys the hidden data.</strong></p>
+                    <p><strong>CORRECT WAY TO SEND:</strong></p>
+                    <ul class="list-unstyled text-info small">
+                        <li><i class="fas fa-check me-2"></i> WhatsApp: Send as <strong>"Document"</strong> (Paperclip > Document)</li>
+                        <li><i class="fas fa-check me-2"></i> Email: Send as <strong>Attachment</strong></li>
+                        <li><i class="fas fa-check me-2"></i> Discord: Send as <strong>File</strong> (or Zip it first)</li>
+                    </ul>
+                </div>
+
+                <!-- DECRYPTION GUIDE -->
+                <div class="step-section">
+                    <div class="step-title" style="color: #0f0;">
+                        <i class="fas fa-unlock me-2"></i> PHASE 3: DECRYPTION
+                    </div>
+                    <p><span class="step-number">01</span> <strong>Upload Asset:</strong> Select the secret image you received.</p>
+                    <p><span class="step-number">02</span> <strong>Authenticate:</strong> Enter the exact password used during encryption.</p>
+                    <p><span class="step-number">03</span> <strong>Extract:</strong> Click "Decrypt" to reveal the hidden text.</p>
+                </div>
+
+                <div class="text-center">
+                    <a href="index.html" class="btn-back">
+                        <i class="fas fa-terminal me-2"></i> RETURN TO TERMINAL
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
