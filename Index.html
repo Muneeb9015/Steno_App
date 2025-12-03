@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stego-AES Suite (Fixed)</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+        .main-card { max-width: 800px; margin: 40px auto; padding: 30px; border-radius: 15px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .preview-box { max-width: 100%; height: auto; margin-top: 15px; border: 2px dashed #ccc; padding: 5px; display: none; border-radius: 8px; }
+        .log-box { background: #1e1e1e; color: #00ff00; padding: 15px; font-family: 'Courier New', monospace; height: 180px; overflow-y: auto; border-radius: 8px; font-size: 0.85rem; margin-top: 25px; border: 1px solid #333; }
+        .nav-tabs .nav-link.active { background-color: #0d6efd; color: white; border-color: #0d6efd; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="main-card">
+        <h2 class="text-center mb-4"><i class="fas fa-mask"></i> Stego-AES Ultimate</h2>
+
+        <ul class="nav nav-tabs nav-fill mb-4" id="myTab" role="tablist">
+            <li class="nav-item"><button class="nav-link active" id="enc-tab" data-bs-toggle="tab" data-bs-target="#enc-pane">1. Hide (Encode)</button></li>
+            <li class="nav-item"><button class="nav-link" id="dec-tab" data-bs-toggle="tab" data-bs-target="#dec-pane">2. Reveal (Decode)</button></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="enc-pane">
+                <div class="mb-3">
+                    <label class="fw-bold">Step 1: Upload Clean Image</label>
+                    <input type="file" class="form-control" id="enc-file" accept="image/png, image/jpeg">
+                    <img id="enc-preview" class="preview-box">
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Step 2: Secret Message</label>
+                    <textarea class="form-control" id="enc-msg" rows="2" placeholder="Type your secret here..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Step 3: Password</label>
+                    <input type="password" class="form-control" id="enc-pass" placeholder="Set a strong password">
+                </div>
+                <button class="btn btn-primary w-100 py-2" onclick="processEncode()">
+                    <i class="fas fa-lock"></i> Encrypt & Hide Message
+                </button>
+                
+                <div id="download-section" class="text-center mt-3" style="display:none;">
+                    <div class="alert alert-success"><strong>Success!</strong> Message hidden in image.</div>
+                    <a id="btn-download" class="btn btn-success btn-lg shadow"><i class="fas fa-download"></i> Download Secret Image</a>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="dec-pane">
+                <div class="mb-3">
+                    <label class="fw-bold">Step 1: Upload Secret Image</label>
+                    <input type="file" class="form-control" id="dec-file" accept="image/*">
+                    <img id="dec-preview" class="preview-box">
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Step 2: Password</label>
+                    <input type="password" class="form-control" id="dec-pass" placeholder="Enter original password">
+                </div>
+                <button class="btn btn-warning w-100 py-2" onclick="processDecode()">
+                    <i class="fas fa-unlock"></i> Reveal Message
+                </button>
+                <div id="dec-result-area" class="mt-3" style="display:none;">
+                    <label>Hidden Message:</label>
+                    <div class="alert alert-secondary" id="dec-result"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="log-box" id="firebase-logs">
+            <div>> System Initialized...</div>
+            <div>> Internal Steganography Engine Loaded.</div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+    // ==========================================
+    // 1. EMBEDDED STEGANOGRAPHY ENGINE (No external link needed)
+    // ==========================================
+    const StegoEngine = {
+        encode: function(message, imageCallback) {
+            const c = document.createElement('canvas');
+            const ctx = c.getContext('2d');
+            const img = new Image();
+            img.src = document.getElementById('enc-preview').src;
+            
+            img.onload = function() {
+                c.width = img.width;
+                c.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                const data = imgData.data;
+
+                // Add termination marker "|||END"
+                message += "|||END"; 
+                
+                // Convert to binary
+                let binary = "";
+                for(let i=0; i<message.length; i++) {
+                    let bin = message.charCodeAt(i).toString(2);
+                    binary += "00000000".substr(bin.length) + bin;
+                }
+
+                if(binary.length > data.length/4) {
+                    alert("Message too long for this image!");
+                    return;
+                }
+
+                // Hide bits in Least Significant Bit (LSB)
+                let digit = 0;
+                for(let i=0; i<data.length; i+=4) {
+                    if(digit < binary.length) {
+                        data[i] = (data[i] & 0xFE) | parseInt(binary[digit]);
+                        digit++;
+                    } else {
+                        break;
+                    }
+                }
+                
+                ctx.putImageData(imgData, 0, 0);
+                imageCallback(c.toDataURL('image/png'));
+            };
+        },
+
+        decode: function(imageSrc, callback) {
+            const c = document.createElement('canvas');
+            const ctx = c.getContext('2d');
+            const img = new Image();
+            img.src = imageSrc;
+            
+            img.onload = function() {
+                c.width = img.width;
+                c.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                const data = imgData.data;
+                
+                let binary = "";
+                // Read all LSBs
+                for(let i=0; i<data.length; i+=4) {
+                    binary += (data[i] & 1).toString();
+                }
+
+                // Convert binary to text
+                let output = "";
+                for(let i=0; i<binary.length; i+=8) {
+                    let byte = binary.substr(i, 8);
+                    let char = String.fromCharCode(parseInt(byte, 2));
+                    output += char;
+                    // Check for marker
+                    if(output.endsWith("|||END")) {
+                        callback(output.replace("|||END", ""));
+                        return;
+                    }
+                }
+                callback(null); // Not found
+            };
+        }
+    };
+
+    // ==========================================
+    // 2. MAIN LOGIC (ENCRYPTION + UI)
+    // ==========================================
+
+    // --- FIREBASE SETUP ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyDngIt392F6q_8CwOYG7K5MKTPm719VaWY",
+      authDomain: "steganography-image.firebaseapp.com",
+      databaseURL: "https://steganography-image-default-rtdb.firebaseio.com",
+      projectId: "steganography-image",
+      storageBucket: "steganography-image.firebasestorage.app",
+      messagingSenderId: "675217006348",
+      appId: "1:675217006348:web:83c4457018b3e46a56b329",
+      measurementId: "G-BYJCHXVQYJ"
+    };
+    
+    let dbRef = null;
+    try {
+        firebase.initializeApp(firebaseConfig);
+        dbRef = firebase.database().ref('logs');
+        logToScreen("Connected to Firebase Database.");
+    } catch(e) {
+        logToScreen("Firebase Error: " + e.message);
+    }
+
+    function logToScreen(msg) {
+        const box = document.getElementById('firebase-logs');
+        const div = document.createElement('div');
+        div.innerText = `> ${msg}`;
+        box.prepend(div);
+        
+        if(dbRef && (msg.includes("Success") || msg.includes("Hidden"))) {
+            dbRef.push({ action: msg, timestamp: new Date().toString() });
+        }
+    }
+
+    // --- ENCODE PROCESS ---
+    document.getElementById('enc-file').addEventListener('change', function(e) {
+        if(e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                document.getElementById('enc-preview').src = evt.target.result;
+                document.getElementById('enc-preview').style.display = 'block';
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    function processEncode() {
+        const file = document.getElementById('enc-file').files[0];
+        const msg = document.getElementById('enc-msg').value;
+        const pass = document.getElementById('enc-pass').value;
+
+        if(!file || !msg || !pass) { alert("All fields are required!"); return; }
+
+        logToScreen("Encrypting Message with AES...");
+        
+        try {
+            // 1. Encrypt
+            const encrypted = CryptoJS.AES.encrypt(msg, pass).toString();
+            
+            // 2. Hide
+            logToScreen("Hiding encrypted data in pixels...");
+            StegoEngine.encode(encrypted, function(finalUrl) {
+                const dlBtn = document.getElementById('btn-download');
+                dlBtn.href = finalUrl;
+                dlBtn.download = "secret_image.png";
+                
+                document.getElementById('download-section').style.display = 'block';
+                logToScreen("Success: Message Hidden & Ready.");
+            });
+
+        } catch(e) {
+            logToScreen("Error: " + e.message);
+        }
+    }
+
+    // --- DECODE PROCESS ---
+    document.getElementById('dec-file').addEventListener('change', function(e) {
+        if(e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                document.getElementById('dec-preview').src = evt.target.result;
+                document.getElementById('dec-preview').style.display = 'block';
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    function processDecode() {
+        const file = document.getElementById('dec-file').files[0];
+        const pass = document.getElementById('dec-pass').value;
+
+        if(!file || !pass) { alert("File and Password required!"); return; }
+
+        logToScreen("Analyzing Image Pixels...");
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            StegoEngine.decode(e.target.result, function(extractedEncrypted) {
+                if(!extractedEncrypted) {
+                    showResult("No hidden message found.", false);
+                    logToScreen("Failed: No data detected.");
+                    return;
+                }
+
+                logToScreen("Data found. Attempting Decryption...");
+                try {
+                    const bytes = CryptoJS.AES.decrypt(extractedEncrypted, pass);
+                    const originalText = bytes.toString(CryptoJS.enc.Utf8);
+
+                    if(originalText) {
+                        showResult(originalText, true);
+                        logToScreen("Success: Message Decoded!");
+                    } else {
+                        showResult("Wrong Password.", false);
+                        logToScreen("Failed: Decryption Key Invalid.");
+                    }
+                } catch(err) {
+                    showResult("Decryption Error.", false);
+                }
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function showResult(text, isSuccess) {
+        const div = document.getElementById('dec-result');
+        div.innerText = text;
+        div.className = isSuccess ? "alert alert-success" : "alert alert-danger";
+        document.getElementById('dec-result-area').style.display = 'block';
+    }
+
+</script>
+</body>
+</html>
