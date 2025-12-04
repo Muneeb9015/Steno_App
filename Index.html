@@ -239,6 +239,30 @@
             font-size: 0.8rem;
             border: 1px solid var(--neon-cyan);
         }
+        /* CLOSE BUTTON STYLE */
+.btn-close-preview {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    color: var(--neon-pink);
+    background: #000;
+    border: 1px solid var(--neon-pink);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--neon-pink);
+    transition: 0.3s;
+    z-index: 100;
+}
+.btn-close-preview:hover {
+    transform: scale(1.1) rotate(90deg);
+    background: var(--neon-pink);
+    color: #fff;
+}
     </style>
 </head>
 
@@ -303,9 +327,12 @@
                                     <input type="file" id="enc-file" hidden accept="image/*">
                                 </div>
                                 <div class="preview-container" id="enc-preview-box">
-                                    <img id="enc-preview" class="preview-img">
-                                    <span class="file-badge" id="enc-filename">filename.png</span>
+                                <div class="btn-close-preview" onclick="clearUpload('enc')">
+                                    <i class="fas fa-times"></i>
                                 </div>
+                                <img id="enc-preview" class="preview-img">
+                                <span class="file-badge" id="enc-filename">filename.png</span>
+                            </div>
                             </div>
 
                             <div class="row g-3">
@@ -350,9 +377,12 @@
                                     <input type="file" id="dec-file" hidden accept="image/*">
                                 </div>
                                 <div class="preview-container" id="dec-preview-box">
-                                    <img id="dec-preview" class="preview-img">
-                                    <span class="file-badge" id="dec-filename">filename.png</span>
+                                <div class="btn-close-preview" onclick="clearUpload('dec')">
+                                    <i class="fas fa-times"></i>
                                 </div>
+                                <img id="dec-preview" class="preview-img">
+                                <span class="file-badge" id="dec-filename">filename.png</span>
+                            </div>
                             </div>
 
                             <div class="mb-4">
@@ -464,6 +494,30 @@
         document.getElementById('dec-file').addEventListener('change', function () {
             handleFileSelect(this, 'dec-preview', 'dec-filename', 'dec-preview-box');
         });
+        // Function to Reset Uploads
+function clearUpload(type) {
+    // 1. Clear the actual file input
+    const fileInput = document.getElementById(type + '-file');
+    fileInput.value = ""; 
+
+    // 2. Hide the preview box
+    document.getElementById(type + '-preview-box').style.display = 'none';
+
+    // 3. Reset the Upload Zone text to default
+    const zone = fileInput.parentElement; // The upload-zone div
+    const title = zone.querySelector('h5');
+    const subtitle = zone.querySelector('p');
+    
+    if(type === 'enc') {
+        title.innerText = "Initialize Cover Image";
+        subtitle.innerText = "Click to upload .PNG or .JPG";
+    } else {
+        title.innerText = "Upload Intercepted Image";
+        subtitle.innerText = "Select the secret image file";
+    }
+
+    logToTerminal("Upload cleared. System reset.", "info");
+}
 
         // ==========================================
         // 2. CORE LOGIC (STEGO + AES + FIREBASE)
@@ -651,3 +705,4 @@
 </body>
 
 </html>
+
